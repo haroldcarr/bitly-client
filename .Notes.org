@@ -1,6 +1,108 @@
 Created       : 2014 Mar 04 (Tue) 17:50:00 by Harold Carr.
-Last Modified : 2014 Mar 19 (Wed) 10:48:21 by Harold Carr.
+Last Modified : 2014 May 09 (Fri) 19:07:16 by Harold Carr.
+
+http://www.well-typed.com/blog/89/
 
 file:/Users/carr/NOSYNC/bitly-api-client
 
 https://www.fpcomplete.com/user/adinapoli/the-pragmatic-haskeller/episode-1-json
+
+http://doingmyprogramming.com/2014/04/14/yet-another-aeson-tutorial/
+
+
+{
+  "data": {
+    "expand": [
+      {
+        "global_hash": "900913",
+        "long_url": "http://google.com/",
+        "short_url": "http://bit.ly/ze6poY",
+        "user_hash": "ze6poY"
+      }
+    ]
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+{
+  "data": {
+    "info": [
+      {
+        "created_at": 1212926400,
+        "created_by": null,
+        "global_hash": "1RmnUT",
+        "short_url": "http://bit.ly/1RmnUT",
+        "title": "Google",
+        "user_hash": "1RmnUT"
+      }
+    ]
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+{
+  "data": {
+    "link_lookup": [
+      {
+        "aggregate_link": "http://bit.ly/2V6CFi",
+        "url": "http://www.google.com/"
+      }
+    ]
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+# shorten:
+{
+  "data": {
+    "global_hash": "900913",
+    "hash": "ze6poY",
+    "long_url": "http://google.com/",
+    "new_hash": 0,
+    "url": "http://bit.ly/ze6poY"
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+{
+  "data": {
+    "link_edit": {
+      "link": "http://bit.ly/JGVkUk"
+    }
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+{
+  "data": {
+    "link_lookup": [
+      {
+        "aggregate_link": "http://bit.ly/2V6CFi",
+        "link": "http://bit.ly/zhheQ9",
+        "url": "http://www.google.com/"
+      }
+    ]
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+{
+  "data": {
+    "link_save": {
+      "aggregate_link": "http://bit.ly/JGVkUl",
+      "link": "http://bit.ly/JGVkUk",
+      "long_url": "http://mergerecords.com/news",
+      "new_link": 1
+    }
+  },
+  "status_code": 200,
+  "status_txt": "OK"
+}
+
+
