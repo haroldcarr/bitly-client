@@ -1,6 +1,6 @@
 {-
 Created       : 2014 Mar 03 (Mon) 20:39:50 by Harold Carr.
-Last Modified : 2014 May 10 (Sat) 17:34:30 by Harold Carr.
+Last Modified : 2014 May 16 (Fri) 23:41:53 by Harold Carr.
 -}
 
 {-# LANGUAGE FlexibleInstances #-}
@@ -69,13 +69,13 @@ instance FromJSON ResponseData where
                   \o ->     ExpandResponseData     <$> o .: "expand"
                         <|> InfoResponseData       <$> o .: "info"
                         <|> LinkLookupResponseData <$> o .: "link_lookup"
-                     -- <|> ShortenResponseData    <$> o .: ""
+                        <|> shortenParse               o
 
 instance FromJSON Response where
     parseJSON v =     expandParse     v
                   <|> infoParse       v
                   <|> linkLookupParse v
-                  <|> shortenParse    v
+--                  <|> shortenParse    v
 
 expandParse :: Value -> Parser Response
 expandParse     = withObject "expandParse" $
@@ -106,14 +106,13 @@ linkLookupParse = withObject "linkLookupParse" $
                         <*> o .:? "aggregate_link"
                         <*> o .:  "url"
 
-shortenParse :: Value -> Parser Response
-shortenParse    = withObject "shortenParse" $
-                  \o -> ShortenResponse
-                        <$> o .: "new_hash"
-                        <*> o .: "url"
-                        <*> o .: "hash"
-                        <*> o .: "global_hash"
-                        <*> o .: "long_url"
+shortenParse :: Object -> Parser ResponseData
+shortenParse o = (ShortenResponse
+                  <$> o .: "new_hash"
+                  <*> o .: "url"
+                  <*> o .: "hash"
+                  <*> o .: "global_hash"
+                  <*> o .: "long_url") >>= \x -> return (ShortenResponseData x)
 
 parseResponse :: String -> Either String DataStatusCodeStatusTxt
 parseResponse x = eitherDecode $ L.pack x
