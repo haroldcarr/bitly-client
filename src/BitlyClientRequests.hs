@@ -1,6 +1,6 @@
 {-
 Created       : 2014 Mar 03 (Mon) 20:39:50 by Harold Carr.
-Last Modified : 2014 May 17 (Sat) 11:24:39 by Harold Carr.
+Last Modified : 2014 May 17 (Sat) 12:02:27 by Harold Carr.
 -}
 
 {-# LANGUAGE TemplateHaskell #-}
@@ -14,18 +14,28 @@ module BitlyClientRequests
 import           BitlyClientTH as BCTH
 
 data Request
+  -- ==================================================
+  -- Data APIs : http://dev.bitly.com/data_apis.html
+  -- TODO
+  -- ==================================================
+  -- Links : http://dev.bitly.com/links.html
+  -- http://dev.bitly.com/links.html#v3_expand
   = ExpandRequest { shortUrl :: [String] -- [URI]
                   , hash     :: [String]
                   }
+  -- http://dev.bitly.com/links.html#v3_info
   | InfoRequest { hash        :: [String]
                 , shortUrl    :: [String] -- URI
                 , expand_user :: Maybe Bool
                 }
+  -- http://dev.bitly.com/links.html#v3_link_lookup
   | Link_SL_LookupRequest { url :: [String]
                           }
+  -- http://dev.bitly.com/links.html#v3_shorten
   | ShortenRequest { longUrl :: String
                    , domain  :: Maybe String
                    }
+  -- http://dev.bitly.com/links.html#v3_user_link_edit
   | User_SL_Link_EditRequest { link     :: String
                              , title    :: Maybe String
                              , note     :: Maybe String
@@ -34,6 +44,22 @@ data Request
                              , archived :: Maybe Bool
                              , edit     :: [String]
                              }
+  -- TODO: http://dev.bitly.com/links.html#v3_user_link_lookup
+  -- TODO: http://dev.bitly.com/links.html#v3_user_link_save
+  -- TODO: http://dev.bitly.com/links.html#v3_user_link_save
+  -- TODO: http://dev.bitly.com/links.html#v3_user_save_custom_domain_keyword
+  -- ==================================================
+  -- TODO: Link Metrics : http://dev.bitly.com/link_metrics.html
+  -- ==================================================
+  -- TODO: User Info/History :
+  -- ==================================================
+  -- TODO: User Metrics :
+  -- ==================================================
+  -- TODO: Organization Metrics :
+  -- ==================================================
+  -- TODO: Bundles :
+  -- ==================================================
+  -- TODO: Domains :
   deriving (Eq, Show)
 
 BCTH.mk ''Request
