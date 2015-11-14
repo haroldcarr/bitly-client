@@ -21,10 +21,11 @@ data DataStatusCodeStatusTxt =
     deriving (Eq, Show)
 
 data ResponseData
-    = ExpandResponseData     { expand :: [Response] }
-    | InfoResponseData       { info :: [Response] }
-    | LinkLookupResponseData { link_lookup :: [Response] }
-    | ShortenResponseData    { shorten :: Response }
+    = ExpandResponseData            { expand :: [Response] }
+    | InfoResponseData              { info :: [Response] }
+    | Link_SL_LookupResponseData    { link_lookup :: [Response] }
+    | ShortenResponseData           { shorten :: Response }
+    | User_SL_Link_EditResponseData { link_edit :: [Response] }
     deriving (Eq, Show)
 
 data Response = ExpandResponse { er_short_url   :: Maybe String -- URI
@@ -43,9 +44,9 @@ data Response = ExpandResponse { er_short_url   :: Maybe String -- URI
                              , ir_error       :: Maybe String
                              , ir_title       :: Maybe String
                              }
-              | LinkLookupResponse { llr_error          :: Maybe String
-                                   , llr_aggregate_link :: Maybe String
-                                   , llr_url            :: String
+              | Link_SL_LookupResponse { llr_error          :: Maybe String
+                                       , llr_aggregate_link :: Maybe String
+                                       , llr_url            :: String
                                    }
               | ShortenResponse { sr_new_hash    :: Integer
                                 , sr_url         :: String
@@ -53,6 +54,8 @@ data Response = ExpandResponse { er_short_url   :: Maybe String -- URI
                                 , sr_global_hash :: String
                                 , sr_long_url    :: String
                                 }
+              | User_SL_Link_EditResponse { ule_link :: String
+                                          }
               | J String -- for development/debugging
               | N String -- for development/debugging
     deriving (Eq, Show)
@@ -66,15 +69,16 @@ instance FromJSON DataStatusCodeStatusTxt where
 
 instance FromJSON ResponseData where
     parseJSON   = withObject "ResponseData" $
-                  \o ->     ExpandResponseData     <$> o .: "expand"
-                        <|> InfoResponseData       <$> o .: "info"
-                        <|> LinkLookupResponseData <$> o .: "link_lookup"
-                        <|> shortenParse               o
+                  \o ->     ExpandResponseData            <$> o .: "expand"
+                        <|> InfoResponseData              <$> o .: "info"
+                        <|> Link_SL_LookupResponseData    <$> o .: "link_lookup"
+                        <|> User_SL_Link_EditResponseData <$> o .: "link_edit"
+                        <|> shortenParse                      o -- this MUST be last
 
 instance FromJSON Response where
     parseJSON v =     expandParse     v
                   <|> infoParse       v
-                  <|> linkLookupParse v
+                  <|> link_sl_lookupParse v
 --                  <|> shortenParse    v
 
 expandParse :: Value -> Parser Response
@@ -99,20 +103,21 @@ infoParse       = withObject "infoParse" $
                         <*> o .:? "error"
                         <*> o .:? "title"
 
-linkLookupParse :: Value -> Parser Response
-linkLookupParse = withObject "linkLookupParse" $
-                  \o -> LinkLookupResponse
+link_sl_lookupParse :: Value -> Parser Response
+link_sl_lookupParse = withObject "link_sl_lookupParse" $
+                  \o -> Link_SL_LookupResponse
                         <$> o .:? "error"
                         <*> o .:? "aggregate_link"
                         <*> o .:  "url"
 
 shortenParse :: Object -> Parser ResponseData
-shortenParse o = (ShortenResponse
-                  <$> o .: "new_hash"
-                  <*> o .: "url"
-                  <*> o .: "hash"
-                  <*> o .: "global_hash"
-                  <*> o .: "long_url") >>= \x -> return (ShortenResponseData x)
+shortenParse o = fmap ShortenResponseData
+                       (ShortenResponse
+                        <$> o .: "new_hash"
+                        <*> o .: "url"
+                        <*> o .: "hash"
+                        <*> o .: "global_hash"
+                        <*> o .: "long_url")
 
 parseResponse :: String -> Either String DataStatusCodeStatusTxt
 parseResponse x = eitherDecode $ L.pack x

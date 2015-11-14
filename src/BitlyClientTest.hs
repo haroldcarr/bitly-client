@@ -73,16 +73,16 @@ infoResponseTestData = "{\"status_code\": 200, \"data\": {\"info\": [{\"hash\": 
 
 ------------------------------------------------------------------------------
 
-linkLookupRequestTestData :: Request
-linkLookupRequestTestData = Link_SL_LookupRequest [ "https://www.example.com/"
-                                                  , "https://www.example.com/1"
-                                                  , "https://www.example.com/2"
-                                                  , "https://www.example.com/1"
-                                                  , "https://www.example.com/2"
-                                                  ]
+link_sl_lookupRequestTestData :: Request
+link_sl_lookupRequestTestData = Link_SL_LookupRequest [ "https://www.example.com/"
+                                                      , "https://www.example.com/1"
+                                                      , "https://www.example.com/2"
+                                                      , "https://www.example.com/1"
+                                                      , "https://www.example.com/2"
+                                                      ]
 
-linkLookupResponseTestData :: String
-linkLookupResponseTestData = "{\"status_code\": 200, \"data\": {\"link_lookup\": [{\"url\": \"https://www.example.com/\", \"aggregate_link\": \"http://bit.ly/maiCS\"}, {\"url\": \"https://www.example.com/1\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/2\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/1\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/2\", \"error\": \"NOT_FOUND\"}]}, \"status_txt\": \"OK\"}"
+link_sl_lookupResponseTestData :: String
+link_sl_lookupResponseTestData = "{\"status_code\": 200, \"data\": {\"link_lookup\": [{\"url\": \"https://www.example.com/\", \"aggregate_link\": \"http://bit.ly/maiCS\"}, {\"url\": \"https://www.example.com/1\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/2\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/1\", \"error\": \"NOT_FOUND\"}, {\"url\": \"https://www.example.com/2\", \"error\": \"NOT_FOUND\"}]}, \"status_txt\": \"OK\"}"
 
 ------------------------------------------------------------------------------
 
@@ -93,6 +93,21 @@ shortenResponseTestData :: String
 shortenResponseTestData = "{ \"status_code\": 200, \"status_txt\": \"OK\", \"data\": { \"long_url\": \"https:\\/\\/www.example.com\\/\", \"url\": \"http:\\/\\/bit.ly\\/1hHLtl2\", \"hash\": \"1hHLtl2\", \"global_hash\": \"maiCS\", \"new_hash\": 0 } }\n"
 
 ------------------------------------------------------------------------------
+
+user_sl_link_editRequestTestData :: Request
+user_sl_link_editRequestTestData = User_SL_Link_EditRequest { link     = "http%3A%2F%2Fbit.ly%2F1hHLtld"
+                                                            , archived = Just True
+                                                            , edit     = "archived"
+                                                            , title    = Nothing
+                                                            , note     = Nothing
+                                                            , private  = Nothing
+                                                            , user_ts  = Nothing
+                                                            }
+
+user_sl_link_editResponseTestData :: String
+user_sl_link_editResponseTestData = "{\"link_edit\":{\"link\":\"http://bit.ly/1hHLtld\"}}"
+
+------------------------------------------------------------------------------
 {-
 let b = (reverse (stripQualifier (mkName "BitlyClientRequests.Request")))
 let l = (reverse (stripQualifier (mkName "BitlyClientRequests.Link_SL_LookupRequest")))
@@ -101,11 +116,11 @@ let r = stripPrefix b l
 
 namingTests :: Test
 namingTests = TestList
-    [teq "expand"     (mkOpName base (mkName "BitlyClientRequests.ExpandRequest"))         "expand"
-    ,teq "info"       (mkOpName base (mkName "BitlyClientRequests.InfoRequest"))           "info"
-    ,teq "linklookup" (mkOpName base (mkName "BitlyClientRequests.Link_SL_LookupRequest")) "link/lookup"
-    ,teq "shorten"    (mkOpName base (mkName "BitlyClientRequests.ShortenRequest"))        "shorten"
-    ,teq "link_edit"  (mkOpName base (mkName "BitlyClientRequests.Link_EditRequest"))      "link_edit"
+    [teq "expand"         (mkOpName base (mkName "BitlyClientRequests.ExpandRequest"))         "expand"
+    ,teq "info"           (mkOpName base (mkName "BitlyClientRequests.InfoRequest"))           "info"
+    ,teq "link_sl_lookup" (mkOpName base (mkName "BitlyClientRequests.Link_SL_LookupRequest")) "link/lookup"
+    ,teq "shorten"        (mkOpName base (mkName "BitlyClientRequests.ShortenRequest"))        "shorten"
+    ,teq "link_edit"      (mkOpName base (mkName "BitlyClientRequests.Link_EditRequest"))      "link_edit"
     ]
  where
    base = mkName "BitlyClientRequests.Request"
@@ -126,14 +141,16 @@ makeRequestUrlTests = TestList
     ,teq "makeRequestUrl info"       (makeRequestUrl infoRequestTestData)
                                      "https://api-ssl.bitly.com/v3/info?hash=phphotoLakeZurichAtDusk&hash=phphotoWinterSunII&hash=phphotoQuoVadis&hash=phphotoDock3&hash=phphotoZueriWest&shortUrl=http%3A%2F%2Fbit.ly%2FLCJq0b&shortUrl=http%3A%2F%2Fbit.ly%2FphphotoCrossroads&shortUrl=http%3A%2F%2Fbit.ly%2FspringFever&shortUrl=http%3A%2F%2Fbit.ly%2FphphotoBenched&shortUrl=http%3A%2F%2Fbit.ly%2FLt5SJo&expand_user=False"
 
-    ,teq "makeRequestUrl linkLookup" (makeRequestUrl linkLookupRequestTestData)
+    ,teq "makeRequestUrl link_sl_lookup"
+                                     (makeRequestUrl link_sl_lookupRequestTestData)
                                      "https://api-ssl.bitly.com/v3/link/lookup?url=https%3A%2F%2Fwww.example.com%2F&url=https%3A%2F%2Fwww.example.com%2F1&url=https%3A%2F%2Fwww.example.com%2F2&url=https%3A%2F%2Fwww.example.com%2F1&url=https%3A%2F%2Fwww.example.com%2F2"
 
     ,teq "makeRequestUrl shorten"    (makeRequestUrl (ShortenRequest "u" (Just "d")))
                                      "https://api-ssl.bitly.com/v3/shorten?longUrl=u&domain=d"
 
-    ,teq "makeRequestUrl linkedit"   (makeRequestUrl (User_SL_Link_EditRequest "linkValue" (Just "maybeTitleValue") Nothing (Just True) (Just 3) Nothing ["edit1","edit2"]))
-                                     "https://api-ssl.bitly.com/v3/user/link_edit?link=linkValue&title=maybeTitleValue&private=True&user_ts=3&edit=edit1&edit=edit2"
+    -- TODO : Is this edit link value correct?
+    ,teq "makeRequestUrl linkedit"   (makeRequestUrl (User_SL_Link_EditRequest "linkValue" (Just "maybeTitleValue") Nothing (Just True) (Just 3) Nothing "edit1,edit2"))
+                                     "https://api-ssl.bitly.com/v3/user/link_edit?link=linkValue&title=maybeTitleValue&private=True&user_ts=3&edit=edit1%2Cedit2"
     ]
 
 ------------------------------------------------------------------------------
@@ -147,21 +164,23 @@ parseResponseTests = TestList
     ,teq "parseResponse info"   ((Right (parseResponse infoResponseTestData)) :: Either String (Either String DataStatusCodeStatusTxt))
                                 (Right (Right (DSCST {ddata = InfoResponseData {info = [InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338666104, ir_short_url = Nothing, ir_hash = Just "phphotoLakeZurichAtDusk", ir_user_hash = Just "LTlncm", ir_global_hash = Just "LTlncn", ir_error = Nothing, ir_title = Just "500px / Lake Zurich at Dusk by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338679612, ir_short_url = Nothing, ir_hash = Just "phphotoWinterSunII", ir_user_hash = Just "LjTbAy", ir_global_hash = Just "LjTbAz", ir_error = Nothing, ir_title = Just "500px / Winter Sun II by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338679845, ir_short_url = Nothing, ir_hash = Just "phphotoQuoVadis", ir_user_hash = Just "JYROvi", ir_global_hash = Just "JYROvj", ir_error = Nothing, ir_title = Just "500px / Quo Vadis? by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338679895, ir_short_url = Nothing, ir_hash = Just "phphotoDock3", ir_user_hash = Just "KmfxWg", ir_global_hash = Just "KmfxWh", ir_error = Nothing, ir_title = Just "500px / Photo \"Dock 3\" by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338717627, ir_short_url = Nothing, ir_hash = Just "phphotoZueriWest", ir_user_hash = Just "LlyMLt", ir_global_hash = Just "LlyN1G", ir_error = Nothing, ir_title = Just "500px / Z\252ri West by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1339143918, ir_short_url = Just "http://bit.ly/LCJq0b", ir_hash = Nothing, ir_user_hash = Just "LCJq0b", ir_global_hash = Just "LCJsVy", ir_error = Nothing, ir_title = Just "swisstech.net: Local postfix as relay to Amazon SES"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1339013462, ir_short_url = Just "http://bit.ly/phphotoCrossroads", ir_hash = Nothing, ir_user_hash = Just "KShcAV", ir_global_hash = Just "KShcAW", ir_error = Nothing, ir_title = Just "500px / Crossroads by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1339051124, ir_short_url = Just "http://bit.ly/springFever", ir_hash = Nothing, ir_user_hash = Just "MbmhB4", ir_global_hash = Just "MbmhB5", ir_error = Nothing, ir_title = Just "500px / Photo \"Spring Fever\" by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338760269, ir_short_url = Just "http://bit.ly/phphotoBenched", ir_hash = Nothing, ir_user_hash = Just "LqVZLZ", ir_global_hash = Just "LqW02c", ir_error = Nothing, ir_title = Just "500px / Benched by Patrick Huber"},InfoResponse {ir_created_by = "stackmagic", ir_created_at = 1338844882, ir_short_url = Just "http://bit.ly/Lt5SJo", ir_hash = Nothing, ir_user_hash = Just "Lt5SJo", ir_global_hash = Just "JPNM5X", ir_error = Nothing, ir_title = Just "Automating Mass Portraits With QR Codes  \171 Bieber Photographic"}]}, status_code = 200, status_txt = "OK"})) :: Either String (Either String DataStatusCodeStatusTxt))
 
-    ,teq "parseResponse linkLookup" ((Right (parseResponse linkLookupResponseTestData)) :: Either String (Either String DataStatusCodeStatusTxt))
-                                    (Right (Right (DSCST {ddata = LinkLookupResponseData {link_lookup = [LinkLookupResponse {llr_error = Nothing, llr_aggregate_link = Just "http://bit.ly/maiCS", llr_url = "https://www.example.com/"},LinkLookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/1"},LinkLookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/2"},LinkLookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/1"},LinkLookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/2"}]}, status_code = 200, status_txt = "OK"})))
+    ,teq "parseResponse link_sl_lookup" ((Right (parseResponse link_sl_lookupResponseTestData)) :: Either String (Either String DataStatusCodeStatusTxt))
+                                        (Right (Right (DSCST {ddata = Link_SL_LookupResponseData {link_lookup = [Link_SL_LookupResponse {llr_error = Nothing, llr_aggregate_link = Just "http://bit.ly/maiCS", llr_url = "https://www.example.com/"},Link_SL_LookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/1"},Link_SL_LookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/2"},Link_SL_LookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/1"},Link_SL_LookupResponse {llr_error = Just "NOT_FOUND", llr_aggregate_link = Nothing, llr_url = "https://www.example.com/2"}]}, status_code = 200, status_txt = "OK"})))
 
     ,teq "parseResponse shorten" ((Right (parseResponse shortenResponseTestData)) :: Either String (Either String DataStatusCodeStatusTxt))
                                  (Right (Right (DSCST {ddata = ShortenResponseData {shorten = ShortenResponse {sr_new_hash = 0, sr_url = "http://bit.ly/1hHLtl2", sr_hash = "1hHLtl2", sr_global_hash = "maiCS", sr_long_url = "https://www.example.com/"}}, status_code = 200, status_txt = "OK"})))
+    ,teq "parseResponse user_sl_link_edit" ((Right (parseResponse user_sl_link_editResponseTestData)) :: Either String (Either String DataStatusCodeStatusTxt))
+                                 (Left "foo")
     ]
 
 ------------------------------------------------------------------------------
 
 remoteTests :: Test
 remoteTests = TestList
-    [teq "doRequest expand"     (unsafePerformIO (doRequest     expandRequestTestData)) (L.pack     expandResponseTestData)
-    ,teq "doRequest info"       (unsafePerformIO (doRequest       infoRequestTestData)) (L.pack       infoResponseTestData)
-    ,teq "doRequest linkLookup" (unsafePerformIO (doRequest linkLookupRequestTestData)) (L.pack linkLookupResponseTestData)
-    ,teq "doRequest shorten"    (unsafePerformIO (doRequest    shortenRequestTestData)) (L.pack    shortenResponseTestData)
+    [teq "doRequest expand"         (unsafePerformIO (doRequest         expandRequestTestData)) (L.pack         expandResponseTestData)
+    ,teq "doRequest info"           (unsafePerformIO (doRequest           infoRequestTestData)) (L.pack           infoResponseTestData)
+    ,teq "doRequest link_sl_Lookup" (unsafePerformIO (doRequest link_sl_lookupRequestTestData)) (L.pack link_sl_lookupResponseTestData)
+    ,teq "doRequest shorten"        (unsafePerformIO (doRequest        shortenRequestTestData)) (L.pack        shortenResponseTestData)
     ]
 
 ------------------------------------------------------------------------------

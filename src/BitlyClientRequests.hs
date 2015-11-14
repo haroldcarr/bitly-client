@@ -1,6 +1,6 @@
 {-
 Created       : 2014 Mar 03 (Mon) 20:39:50 by Harold Carr.
-Last Modified : 2014 May 17 (Sat) 12:02:27 by Harold Carr.
+Last Modified : 2014 May 17 (Sat) 16:06:33 by Harold Carr.
 -}
 
 {-# LANGUAGE TemplateHaskell #-}
@@ -42,10 +42,9 @@ data Request
                              , private  :: Maybe Bool
                              , user_ts  :: Maybe Int
                              , archived :: Maybe Bool
-                             , edit     :: [String]
+                             , edit     :: String
                              }
   -- TODO: http://dev.bitly.com/links.html#v3_user_link_lookup
-  -- TODO: http://dev.bitly.com/links.html#v3_user_link_save
   -- TODO: http://dev.bitly.com/links.html#v3_user_link_save
   -- TODO: http://dev.bitly.com/links.html#v3_user_save_custom_domain_keyword
   -- ==================================================
